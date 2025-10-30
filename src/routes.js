@@ -3,7 +3,7 @@ const Livro = require('./models'); // Importa o modelo de livro
 const router = express.Router();
 
 // Endpoint para cadastro de livros
-router.post('/livros', async (req, res) => {
+router.post('/', async (req, res) => {
     const { titulo, autor, editora, anoPublicacao, numeroPaginas } = req.body;
 
     // Validação dos campos obrigatórios
@@ -22,7 +22,7 @@ router.post('/livros', async (req, res) => {
 });
 
 // Endpoint para listar todos os livros
-router.get('/livros', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const livros = await Livro.find();
         res.status(200).json(livros);
@@ -32,7 +32,7 @@ router.get('/livros', async (req, res) => {
 });
 
 // Endpoint para consultar um livro por ID
-router.get('/livros/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -47,7 +47,7 @@ router.get('/livros/:id', async (req, res) => {
 });
 
 // Endpoint para remover um livro por ID
-router.delete('/livros/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -61,55 +61,54 @@ router.delete('/livros/:id', async (req, res) => {
     }
 });
 
-// ✅ PUT - Atualizar um livro existente
+// ✅ PUT - Atualizar um livro existente (AJUSTADO PARA O CYPRESS)
+// Rota final: PUT /api/livros/:id
 router.put('/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      // Validação do formato do ID
-      if (!id || id.length !== 24) {
-        return res.status(400).json({ message: 'ID inválido.' });
-      }
-  
-      // Campos permitidos para atualização
-      const camposPermitidos = [
-        'titulo',
-        'autor',
-        'editora',
-        'anoPublicacao',
-        'numeroPaginas'
-      ];
-  
-      // Filtra apenas os campos válidos enviados
-      const dadosAtualizados = {};
-      camposPermitidos.forEach(campo => {
-        if (req.body[campo] !== undefined) {
-          dadosAtualizados[campo] = req.body[campo];
-        }
-      });
-  
-      // Atualiza o livro e retorna o novo documento
-      const livroAtualizado = await Livro.findByIdAndUpdate(
-        id,
-        dadosAtualizados,
-        { new: true, runValidators: true }
-      );
-  
-      if (!livroAtualizado) {
-        return res.status(404).json({ message: 'Livro não encontrado.' });
-      }
-  
-      res.status(200).json({
-        message: '📘 Livro atualizado com sucesso!',
-        livro: livroAtualizado
-      });
-  
-    } catch (error) {
-      res.status(500).json({
-        message: '❌ Erro ao atualizar o livro',
-        error: error.message
-      });
-    }
-  });
+        try {
+          const { id } = req.params;
+      
+          // Validação do formato do ID
+          if (!id || id.length !== 24) {
+            return res.status(400).json({ message: 'ID inválido.' });
+          }
+      
+          // Campos permitidos para atualização
+          const camposPermitidos = [
+            'titulo',
+            'autor',
+            'editora',
+            'anoPublicacao',
+            'numeroPaginas'
+          ];
+      
+          // Filtra apenas os campos válidos enviados
+          const dadosAtualizados = {};
+          camposPermitidos.forEach(campo => {
+            if (req.body[campo] !== undefined) {
+              dadosAtualizados[campo] = req.body[campo];
+            }
+          });
+      
+          // Atualiza o livro e retorna o novo documento
+          const livroAtualizado = await Livro.findByIdAndUpdate(
+            id,
+            dadosAtualizados,
+            { new: true, runValidators: true }
+          );
+      
+          if (!livroAtualizado) {
+            return res.status(404).json({ message: 'Livro não encontrado.' });
+          }
+      
+          // AGORA RETORNA O OBJETO DO LIVRO DIRETAMENTE, PARA PASSAR NO CYPRESS
+          res.status(200).json(livroAtualizado); 
+      
+        } catch (error) {
+          res.status(500).json({
+            message: '❌ Erro ao atualizar o livro',
+            error: error.message
+          });
+        }
+      });
   
   module.exports = router;

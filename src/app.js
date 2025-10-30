@@ -8,20 +8,22 @@ const app = express();
 // Conectando ao MongoDB
 mongoose.connect('mongodb+srv://dba:TesteLivroApi@livroapiteste.jgk7w.mongodb.net/?retryWrites=true&w=majority&appName=LivroApiTeste', 
 ).then(() => {
-    console.log('Conectado ao MongoDB com sucesso');
+    console.log('Conectado ao MongoDB com sucesso');
 }).catch((error) => {
-    console.error('Erro ao conectar ao MongoDB:', error);
+    console.error('Erro ao conectar ao MongoDB:', error);
 });
 
 // Middleware para permitir o uso de JSON no body das requisições
 app.use(express.json());
 
-// Define o prefixo '/api' para todas as rotas do livro
-app.use('/api', routes); // Corrigido para usar 'routes' em vez de 'livroRoutes'
+// Define o prefixo '/api/livros' para todas as rotas importadas de 'routes.js'
+// Isso está correto.
+app.use('/api/livros', routes);
 
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
 
+module.exports = app;
